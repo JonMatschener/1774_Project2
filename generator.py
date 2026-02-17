@@ -1,42 +1,35 @@
 class Generator:
+    
     def __init__(
         self,
         name: str,
         bus1_name: str,
-        mw_setpoint: float,
-        v_setpoint: float
+        voltage_setpoint: float,
+        mw_setpoint: float
     ):
         self.name = name
         self.bus1_name = bus1_name
-        self.mw_setpoint = mw_setpoint
-        self.v_setpoint = v_setpoint
+        self.voltage_setpoint = float(voltage_setpoint)
+        self.mw_setpoint = float(mw_setpoint)
 
     def __repr__(self):
         return (
-            f"Generator(name={self.name}, "
-            f"bus1={self.bus1_name}, "
-            f"mw_setpoint={self.mw_setpoint}, "
-            f"v_setpoint={self.v_setpoint})"
+            f"Generator(name={self.name!r}, "
+            f"bus1_name={self.bus1_name!r}, "
+            f"voltage_setpoint={self.voltage_setpoint}, "
+            f"mw_setpoint={self.mw_setpoint})"
         )
 
 
 # ---------------- TEST CASE ----------------
 if __name__ == "__main__":
-    # Create a generator instance
-    gen = Generator(
-        name="G1",
-        bus1_name="Bus_1",
-        mw_setpoint=100.0,
-        v_setpoint=1.05
-    )
+    gen = Generator("G1", "Bus 1", 1.04, 100.0)
 
-    # Print generator to verify __repr__
     print(gen)
 
-    # Basic attribute checks
     assert gen.name == "G1"
-    assert gen.bus1_name == "Bus_1"
+    assert gen.bus1_name == "Bus 1"
+    assert gen.voltage_setpoint == 1.04
     assert gen.mw_setpoint == 100.0
-    assert gen.v_setpoint == 1.05
 
     print("Generator test passed ✔")
