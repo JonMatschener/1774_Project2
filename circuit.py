@@ -1,6 +1,6 @@
 from bus import Bus
 from transformer import Transformer
-from transmission_line import TransmissionLine
+from transmissionLine import TransmissionLine
 from load import Load
 from generator import Generator
 
