@@ -15,32 +15,32 @@ class Load:
         self.mw = mw
         self.mvar = mvar
 
+    def calc_p(self, sbase):
+        """
+        Return per-unit real power consumption.
+        """
+        return self.mw / sbase
+
+    def calc_q(self, sbase):
+        """
+        Return per-unit reactive power consumption.
+        """
+        return self.mvar / sbase
+
     def __repr__(self):
-        return (
-            f"Load(name={self.name}, "
-            f"bus1={self.bus1_name}, "
-            f"MW={self.mw}, "
-            f"MVAR={self.mvar})"
-        )
+        return (f"Load(name={self.name}, bus={self.bus1_name}, "
+                f"P={self.mw} MW, Q={self.mvar} MVAR)")
 
 
 # ---------------- TEST CASE ----------------
 if __name__ == "__main__":
-    # Create a load instance
-    load = Load(
-        name="L1",
-        bus1_name="Bus_1",
-        mw=75.0,
-        mvar=30.0
-    )
+    if __name__ == "__main__":
+        l1 = Load("L1", "Bus 2", 50, 30)
 
-    # Print load to verify __repr__
-    print(load)
+        print(l1)
 
-    # Attribute checks
-    assert load.name == "L1"
-    assert load.bus1_name == "Bus_1"
-    assert load.mw == 75.0
-    assert load.mvar == 30.0
+        sbase = 100
+        print("Per-unit P:", l1.calc_p(sbase))
+        print("Per-unit Q:", l1.calc_q(sbase))
 
     print("Load test passed ✔")

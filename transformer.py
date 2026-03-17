@@ -26,11 +26,11 @@ class Transformer:
         for a pure series element.
         """
 
-        y = self.Yseries
+        y_series = self.Yseries
 
         data = [
-            [y, -y],
-            [-y, y]
+            [y_series, -y_series],
+            [-y_series, y_series]
         ]
 
         return pd.DataFrame(

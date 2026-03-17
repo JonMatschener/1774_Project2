@@ -32,12 +32,12 @@ class TransmissionLine:
         for the pi-model transmission line.
         """
 
-        y = self.Yseries
-        ysh_half = self.Yshunt / 2
+        y_series = self.Yseries
+        y_shunt = self.Yshunt
 
         data = [
-            [y + ysh_half, -y],
-            [-y, y + ysh_half]
+            [y_series + y_shunt/2, -y_series],
+            [-y_series, y_series + y_shunt/2]
         ]
 
         return pd.DataFrame(
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     line1 = TransmissionLine(
         "Line 1", "Bus 1", "Bus 2",
-        0.02, 0.25, 0.0, 0.04
+        0.02, 0.25, 0.0, 0.2
     )
 
     print("Line Yseries:")
