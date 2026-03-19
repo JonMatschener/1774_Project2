@@ -12,6 +12,12 @@ class Generator:
         self.voltage_setpoint = float(voltage_setpoint)
         self.mw_setpoint = float(mw_setpoint)
 
+    def calc_p(self, sbase):
+        """
+        Return per-unit real power injection.
+        """
+        return self.mw_setpoint / sbase
+
     def __repr__(self):
         return (
             f"Generator(name={self.name!r}, "
@@ -31,5 +37,8 @@ if __name__ == "__main__":
     assert gen.bus1_name == "Bus 1"
     assert gen.voltage_setpoint == 1.04
     assert gen.mw_setpoint == 100.0
+
+    sbase = 100
+    print("Per-unit P:", gen.calc_p(sbase))
 
     print("Generator test passed ✔")

@@ -29,3 +29,4 @@ c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.00, 1.72)
 # -----------------
 c.calc_ybus()
 print(c.ybus.to_string())
+print(c.transmissionlines["L2"].r)
