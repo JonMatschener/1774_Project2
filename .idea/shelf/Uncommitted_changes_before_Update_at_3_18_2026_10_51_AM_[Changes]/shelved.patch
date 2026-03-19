@@ -1,0 +1,20 @@
+Index: validate_case69.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from circuit import Circuit\r\n\r\nc = Circuit(\"Case 6.9\")\r\n\r\n# -----------------\r\n# Add 5 Buses\r\n# -----------------\r\nc.addbus(\"One\", 15.0)\r\nc.addbus(\"Two\", 345.0)\r\nc.addbus(\"Three\", 15.0)\r\nc.addbus(\"Four\", 345.0)\r\nc.addbus(\"Five\", 345.0)\r\n\r\n# -----------------\r\n# Add 2 Transformers\r\n# -----------------\r\nc.addtransformer(\"T1\", \"One\", \"Five\", 0.0015, 0.02)\r\nc.addtransformer(\"T2\", \"Four\", \"Three\", 0.00075, 0.01)\r\n\r\n# -----------------\r\n# Add 3 Transmission Lines\r\n# -----------------\r\nc.addtransmissionline(\"L1\", \"Five\", \"Four\", 0.00225, 0.025, 0.00, 0.44)\r\nc.addtransmissionline(\"L2\", \"Five\", \"Two\", 0.0045, 0.05, 0.00, 0.88)\r\nc.addtransmissionline(\"L3\", \"Four\", \"Two\", 0.009, 0.1, 0.00, 1.72)\r\n\r\n# -----------------\r\n# Compute Ybus\r\n# -----------------\r\nc.calc_ybus()\r\nprint(c.ybus.to_string())
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/validate_case69.py b/validate_case69.py
+--- a/validate_case69.py	(revision 3db4778fb10e6c6d7fc289fb0cc47f0f955f88f3)
++++ b/validate_case69.py	(date 1772718550243)
+@@ -28,4 +28,6 @@
+ # Compute Ybus
+ # -----------------
+ c.calc_ybus()
+-print(c.ybus.to_string())
+\ No newline at end of file
++print(c.ybus.to_string())
++
++print(c.transmissionlines["L1"].b)
+\ No newline at end of file
