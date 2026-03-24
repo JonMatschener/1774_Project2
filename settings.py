@@ -156,3 +156,166 @@ if __name__ == "__main__":
 
         s2 = settings(freq=50, sbase=200)
         print("Custom Settings:", s2)
+
+if __name__ == "__main__":
+    from bus import Bus
+    from circuit import Circuit
+
+    Bus.bus_index = 0
+
+    c = Circuit("Case 6.9 Milestone 6 Validation")
+
+    # -----------------
+    # Add 5 Buses from validate_case69.py
+    # -----------------
+    c.addbus("One", 15.0)
+    c.addbus("Two", 345.0)
+    c.addbus("Three", 15.0)
+    c.addbus("Four", 345.0)
+    c.addbus("Five", 345.0)
+
+    # -----------------
+    # Assign bus types / initial guesses
+    # Simple NR-ready setup using the Case 6.9 network
+    # -----------------
+    c.buses["One"].bus_type = "Slack"
+    c.buses["One"].vpu = 1.05
+    c.buses["One"].delta = 0.0
+
+    c.buses["Two"].bus_type = "PV"
+    c.buses["Two"].vpu = 1.01
+    c.buses["Two"].delta = 0.0
+
+    c.buses["Three"].bus_type = "PQ"
+    c.buses["Three"].vpu = 1.00
+    c.buses["Three"].delta = 0.0
+
+    c.buses["Four"].bus_type = "PQ"
+    c.buses["Four"].vpu = 1.00
+    c.buses["Four"].delta = 0.0
+
+    c.buses["Five"].bus_type = "PQ"
+    c.buses["Five"].vpu = 1.00
+    c.buses["Five"].delta = 0.0
+
+    # -----------------
+    # Add the exact Case 6.9 branch data from validate_case69.py
+    # -----------------
+    c.addtransformer("T1", "One", "Five", 0.0015, 0.02)
+    c.addtransformer("T2", "Four", "Three", 0.00075, 0.01)
+
+    c.addtransmissionline("L1", "Five", "Four", 0.00225, 0.025, 0.00, 0.44)
+    c.addtransmissionline("L2", "Five", "Two", 0.0045, 0.05, 0.00, 0.88)
+    c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.00, 1.72)
+
+    # -----------------
+    # Add simple generation/load for mismatch testing
+    # These are for Milestone 6 validation structure.
+    # -----------------
+    c.addgenerator("G1", "Two", 1.01, 100.0)
+
+    c.addload("Load1", "Three", 90.0, 30.0)
+    c.addload("Load2", "Four", 100.0, 35.0)
+    c.addload("Load3", "Five", 125.0, 50.0)
+
+    # -----------------
+    # Build Ybus
+    # -----------------
+    c.calc_ybus()
+
+    # -----------------
+    # Settings object
+    # -----------------
+    s = settings(60.0, 100.0)
+
+    # -----------------
+    # Initial voltage vector
+    # -----------------
+    V = s.initialize_voltages(c.buses)
+    print("Initial voltage vector:")
+    print(V)
+    print()
+
+    # -----------------
+    # Calculated injections at each bus
+    # -----------------
+    print("Calculated injections:")
+    for bus in sorted(c.buses.values(), key=lambda b: b.index):
+        P_calc, Q_calc = s.compute_power_injection(bus, c.ybus, V)
+        print(f"{bus.name}: P_calc={P_calc:.6f}, Q_calc={Q_calc:.6f}")
+    print()
+
+    # -----------------
+    # Newton-Raphson mismatch vector
+    # -----------------
+    mismatch, labels = s.compute_power_mismatch(c.buses, c.ybus, V, c)
+    print("Mismatch vector:")
+    for label, value in zip(labels, mismatch):
+        print(f"{label} = {value:.6f}")
+
+if __name__ == "__main__":
+    from bus import Bus
+    from circuit import Circuit
+
+    Bus.bus_index = 0
+
+    c = Circuit("Case 6.9 Milestone 6 Validation")
+
+    c.addbus("One", 15.0)
+    c.addbus("Two", 345.0)
+    c.addbus("Three", 15.0)
+    c.addbus("Four", 345.0)
+    c.addbus("Five", 345.0)
+
+    c.buses["One"].bus_type = "Slack"
+    c.buses["One"].vpu = 1.05
+    c.buses["One"].delta = 0.0
+
+    c.buses["Two"].bus_type = "PQ"
+    c.buses["Two"].vpu = 1.00
+    c.buses["Two"].delta = 0.0
+
+    c.buses["Three"].bus_type = "PV"
+    c.buses["Three"].vpu = 1.04
+    c.buses["Three"].delta = 0.0
+
+    c.buses["Four"].bus_type = "PQ"
+    c.buses["Four"].vpu = 1.00
+    c.buses["Four"].delta = 0.0
+
+    c.buses["Five"].bus_type = "PQ"
+    c.buses["Five"].vpu = 1.00
+    c.buses["Five"].delta = 0.0
+
+    c.addtransformer("T1", "One", "Five", 0.0015, 0.02)
+    c.addtransformer("T2", "Four", "Three", 0.00075, 0.01)
+
+    c.addtransmissionline("L1", "Five", "Four", 0.00225, 0.025, 0.0, 0.44)
+    c.addtransmissionline("L2", "Five", "Two", 0.0045, 0.05, 0.0, 0.88)
+    c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.0, 1.72)
+
+    c.addgenerator("G1", "Three", 1.04, 400.85)
+
+    c.addload("Load1", "Two", 800.0, 150.0)
+    c.addload("Load2", "Four", -37.29, -605.20)
+    c.addload("Load3", "Five", 0.0, -66.0)
+
+    c.calc_ybus()
+
+    s = settings(60.0, 100.0)
+
+    V = s.initialize_voltages(c.buses)
+    print("Initial voltage vector:")
+    print(V)
+    print()
+
+    print("Calculated injections:")
+    for bus in sorted(c.buses.values(), key=lambda b: b.index):
+        P_calc, Q_calc = s.compute_power_injection(bus, c.ybus, V)
+        print(f"{bus.name}: P_calc={P_calc:.6f}, Q_calc={Q_calc:.6f}")
+    print()
+
+    mismatch, labels = s.compute_power_mismatch(c.buses, c.ybus, V, c)
+    print("Mismatch vector:")
+    for label, value in zip(labels, mismatch):
+        print(f"{label} = {value:.6f}")
