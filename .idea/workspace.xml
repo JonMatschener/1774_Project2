@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7dd79156-3de6-496b-a94b-db2428520f9d" name="Changes" comment="circuit change (ybus)">
-      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
+    <list default="true" id="7dd79156-3de6-496b-a94b-db2428520f9d" name="Changes" comment="milestone6">
+      <change afterPath="$PROJECT_DIR$/jacobian.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,7 +186,31 @@
       <option name="project" value="LOCAL" />
       <updated>1773900023336</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="milestone6">
+      <option name="closed" value="true" />
+      <created>1773901528508</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1773901528508</updated>
+    </task>
+    <task id="LOCAL-00006" summary="milestone6">
+      <option name="closed" value="true" />
+      <created>1774356835127</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1774356835127</updated>
+    </task>
+    <task id="LOCAL-00007" summary="milestone6">
+      <option name="closed" value="true" />
+      <created>1774527748249</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1774527748249</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -209,6 +234,7 @@
     <MESSAGE value="circuit implementation" />
     <MESSAGE value="circuit change" />
     <MESSAGE value="circuit change (ybus)" />
-    <option name="LAST_COMMIT_MESSAGE" value="circuit change (ybus)" />
+    <MESSAGE value="milestone6" />
+    <option name="LAST_COMMIT_MESSAGE" value="milestone6" />
   </component>
 </project>
