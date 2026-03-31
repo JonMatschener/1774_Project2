@@ -1,183 +1,273 @@
 import numpy as np
 
-
 class Jacobian:
+    """
+    Builds the Newton-Raphson Jacobian matrix.
 
-    def __init__(self):
-        self.matrix = None
+    Structure:
+        J = [J1  J2
+             J3  J4]
 
+    J1 = dP/dδ
+    J2 = dP/dV
+    J3 = dQ/dδ
+    J4 = dQ/dV
+    """
 
-    def calc_jacobian(self, buses, ybus, voltages):
+    def calc_jacobian(self, buses, ybus, voltages, settings):
 
+        # -------------------------
+        # Step 1: Sort buses by index
+        # -------------------------
         ordered = sorted(buses.values(), key=lambda b: b.index)
 
-        Y = ybus
+        # -------------------------
+        # Step 2: Extract Ybus
+        # -------------------------
+        Y = ybus.values if hasattr(ybus, "values") else ybus
         G = Y.real
         B = Y.imag
 
-        pq_buses = []
-        pv_buses = []
+        # -------------------------
+        # Step 3: Build variable lists
+        # -------------------------
+        angle_buses = []     # δ variables (all except slack)
+        voltage_buses = []   # V variables (only PQ)
 
         for bus in ordered:
+            if bus.bus_type != "Slack":
+                angle_buses.append(bus)
             if bus.bus_type == "PQ":
-                pq_buses.append(bus)
-            elif bus.bus_type == "PV":
-                pv_buses.append(bus)
+                voltage_buses.append(bus)
 
-        angle_buses = [b for b in ordered if b.bus_type != "Slack"]
-        voltage_buses = pq_buses
+        # -------------------------
+        # Step 4: Create Jacobian matrix
+        # -------------------------
+        n = len(angle_buses) + len(voltage_buses)
+        J = np.zeros((n, n))
 
-        nP = len(angle_buses)
-        nQ = len(voltage_buses)
+        # Helper function
+        def get_PQ(bus):
+            return settings.compute_power_injection(bus, ybus, voltages)
 
-        J1 = np.zeros((nP, nP))
-        J2 = np.zeros((nP, nQ))
-        J3 = np.zeros((nQ, nP))
-        J4 = np.zeros((nQ, nQ))
-
+        # =========================
+        # Step 5: Fill J1 and J2
+        # =========================
         for i, bus_i in enumerate(angle_buses):
 
             Vi = abs(voltages[bus_i.index])
             deltai = np.angle(voltages[bus_i.index])
+            Pi, Qi = get_PQ(bus_i)
 
+            # ---------- J1: dP/dδ ----------
+            for j, bus_j in enumerate(angle_buses):
+
+                Vj = abs(voltages[bus_j.index])
+                deltaj = np.angle(voltages[bus_j.index])
+
+                if i == j:
+                    # Diagonal
+                    J[i, j] = -Qi - B[bus_i.index, bus_i.index] * Vi**2
+                else:
+                    # Off-diagonal
+                    J[i, j] = Vi * Vj * (
+                        G[bus_i.index, bus_j.index]*np.sin(deltai - deltaj)
+                        - B[bus_i.index, bus_j.index]*np.cos(deltai - deltaj)
+                    )
+
+            # ---------- J2: dP/dV ----------
+            for j, bus_j in enumerate(voltage_buses):
+
+                col = len(angle_buses) + j
+                Vj = abs(voltages[bus_j.index])
+                deltaj = np.angle(voltages[bus_j.index])
+
+                if bus_i.index == bus_j.index:
+                    # Diagonal
+                    J[i, col] = (Pi / Vi) + G[bus_i.index, bus_i.index]*Vi
+                else:
+                    # Off-diagonal
+                    J[i, col] = Vi * (
+                        G[bus_i.index, bus_j.index]*np.cos(deltai - deltaj)
+                        + B[bus_i.index, bus_j.index]*np.sin(deltai - deltaj)
+                    )
+
+        # =========================
+        # Step 6: Fill J3 and J4
+        # (ONLY PQ buses)
+        # =========================
+        for i, bus_i in enumerate(voltage_buses):
+
+            row = len(angle_buses) + i
+
+            Vi = abs(voltages[bus_i.index])
+            deltai = np.angle(voltages[bus_i.index])
+            Pi, Qi = get_PQ(bus_i)
+
+            # ---------- J3: dQ/dδ ----------
             for j, bus_j in enumerate(angle_buses):
 
                 Vj = abs(voltages[bus_j.index])
                 deltaj = np.angle(voltages[bus_j.index])
 
                 if bus_i.index == bus_j.index:
-
-                    sum_term = 0
-
-                    for k in range(len(voltages)):
-
-                        Vk = abs(voltages[k])
-                        deltak = np.angle(voltages[k])
-
-                        sum_term += Vi * Vk * (
-                            -G[bus_i.index, k] * np.sin(deltai - deltak)
-                            + B[bus_i.index, k] * np.cos(deltai - deltak)
-                        )
-
-                    J1[i, j] = sum_term
-
+                    J[row, j] = Pi - G[bus_i.index, bus_i.index]*Vi**2
                 else:
-
-                    J1[i, j] = Vi * Vj * (
-                        G[bus_i.index, bus_j.index]
-                        * np.sin(deltai - deltaj)
-                        - B[bus_i.index, bus_j.index]
-                        * np.cos(deltai - deltaj)
+                    J[row, j] = -Vi * Vj * (
+                        G[bus_i.index, bus_j.index]*np.cos(deltai - deltaj)
+                        + B[bus_i.index, bus_j.index]*np.sin(deltai - deltaj)
                     )
 
-        for i, bus_i in enumerate(angle_buses):
-
-            Vi = abs(voltages[bus_i.index])
-            deltai = np.angle(voltages[bus_i.index])
-
+            # ---------- J4: dQ/dV ----------
             for j, bus_j in enumerate(voltage_buses):
 
-                Vj = abs(voltages[bus_j.index])
-                deltaj = np.angle(voltages[bus_j.index])
-
-                if bus_i.index == bus_j.index:
-
-                    sum_term = 0
-
-                    for k in range(len(voltages)):
-
-                        Vk = abs(voltages[k])
-                        deltak = np.angle(voltages[k])
-
-                        sum_term += Vk * (
-                            G[bus_i.index, k] * np.cos(deltai - deltak)
-                            + B[bus_i.index, k] * np.sin(deltai - deltak)
-                        )
-
-                    J2[i, j] = sum_term * 2 * Vi
-
-                else:
-
-                    J2[i, j] = Vi * (
-                        G[bus_i.index, bus_j.index]
-                        * np.cos(deltai - deltaj)
-                        + B[bus_i.index, bus_j.index]
-                        * np.sin(deltai - deltaj)
-                    )
-
-        for i, bus_i in enumerate(voltage_buses):
-
-            Vi = abs(voltages[bus_i.index])
-            deltai = np.angle(voltages[bus_i.index])
-
-            for j, bus_j in enumerate(angle_buses):
+                col = len(angle_buses) + j
 
                 Vj = abs(voltages[bus_j.index])
                 deltaj = np.angle(voltages[bus_j.index])
 
                 if bus_i.index == bus_j.index:
-
-                    sum_term = 0
-
-                    for k in range(len(voltages)):
-
-                        Vk = abs(voltages[k])
-                        deltak = np.angle(voltages[k])
-
-                        sum_term += Vi * Vk * (
-                            G[bus_i.index, k] * np.cos(deltai - deltak)
-                            + B[bus_i.index, k] * np.sin(deltai - deltak)
-                        )
-
-                    J3[i, j] = -sum_term
-
+                    J[row, col] = (Qi / Vi) - B[bus_i.index, bus_i.index]*Vi
                 else:
-
-                    J3[i, j] = -Vi * Vj * (
-                        G[bus_i.index, bus_j.index]
-                        * np.cos(deltai - deltaj)
-                        + B[bus_i.index, bus_j.index]
-                        * np.sin(deltai - deltaj)
+                    J[row, col] = Vi * (
+                        G[bus_i.index, bus_j.index]*np.sin(deltai - deltaj)
+                        - B[bus_i.index, bus_j.index]*np.cos(deltai - deltaj)
                     )
 
-        for i, bus_i in enumerate(voltage_buses):
+        return J
 
-            Vi = abs(voltages[bus_i.index])
-            deltai = np.angle(voltages[bus_i.index])
+# Test Case
 
-            for j, bus_j in enumerate(voltage_buses):
+    if __name__ == "__main__":
+        from circuit import Circuit
+        from bus import Bus
+        from settings import settings
+        from jacobian import Jacobian
 
-                Vj = abs(voltages[bus_j.index])
-                deltaj = np.angle(voltages[bus_j.index])
+        import numpy as np
 
-                if bus_i.index == bus_j.index:
+        # Reset indexing (IMPORTANT)
+        Bus.bus_index = 0
 
-                    sum_term = 0
+        c = Circuit("Case 6.9")
 
-                    for k in range(len(voltages)):
+        # -----------------
+        # Add 5 Buses
+        # -----------------
+        c.addbus("One", 15.0)
+        c.addbus("Two", 345.0)
+        c.addbus("Three", 15.0)
+        c.addbus("Four", 345.0)
+        c.addbus("Five", 345.0)
 
-                        Vk = abs(voltages[k])
-                        deltak = np.angle(voltages[k])
+        # -----------------
+        # Assign bus types + initial guesses
+        # -----------------
+        c.buses["One"].bus_type = "Slack"
+        c.buses["One"].vpu = 1.00
+        c.buses["One"].delta = 0.0
 
-                        sum_term += Vk * (
-                            G[bus_i.index, k] * np.sin(deltai - deltak)
-                            - B[bus_i.index, k] * np.cos(deltai - deltak)
-                        )
+        c.buses["Two"].bus_type = "PQ"
+        c.buses["Two"].vpu = 1.00
+        c.buses["Two"].delta = 0.0
 
-                    J4[i, j] = -2 * Vi * sum_term
+        c.buses["Three"].bus_type = "PV"
+        c.buses["Three"].vpu = 1.05
+        c.buses["Three"].delta = 0.0
 
-                else:
+        c.buses["Four"].bus_type = "PQ"
+        c.buses["Four"].vpu = 1.00
+        c.buses["Four"].delta = 0.0
 
-                    J4[i, j] = Vi * (
-                        G[bus_i.index, bus_j.index]
-                        * np.sin(deltai - deltaj)
-                        - B[bus_i.index, bus_j.index]
-                        * np.cos(deltai - deltaj)
-                    )
+        c.buses["Five"].bus_type = "PQ"
+        c.buses["Five"].vpu = 1.00
+        c.buses["Five"].delta = 0.0
 
-        top = np.hstack((J1, J2))
-        bottom = np.hstack((J3, J4))
+        # -----------------
+        # Add 2 Transformers
+        # -----------------
+        c.addtransformer("T1", "One", "Five", 0.0015, 0.02)
+        c.addtransformer("T2", "Four", "Three", 0.00075, 0.01)
 
-        self.matrix = np.vstack((top, bottom))
+        # -----------------
+        # Add 3 Transmission Lines
+        # -----------------
+        c.addtransmissionline("L1", "Five", "Four", 0.00225, 0.025, 0.00, 0.44)
+        c.addtransmissionline("L2", "Five", "Two", 0.0045, 0.05, 0.00, 0.88)
+        c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.00, 1.72)
 
-        return self.matrix
+        # -----------------
+        # Add Generator
+        # -----------------
+        c.addgenerator("G1", "Three", 1.05, 520.0)
+
+        # -----------------
+        # Add Loads
+        # -----------------
+        c.addload("Load2", "Two", 800.0, 280.0)
+        c.addload("Load3", "Three", 80.0, 40.0)
+
+        # -----------------
+        # Compute Ybus
+        # -----------------
+        c.calc_ybus()
+
+        print("\nYbus Matrix:")
+        print(c.ybus.to_string())
+
+        # -----------------
+        # Settings
+        # -----------------
+        s = settings(60.0, 100.0)
+
+        # -----------------
+        # Voltage vector
+        # -----------------
+        V = s.initialize_voltages(c.buses)
+
+        print("\nInitial Voltage Vector:")
+        print(V)
+
+        # -----------------
+        # Power Injections
+        # -----------------
+        print("\nCalculated Injections:")
+        for bus in sorted(c.buses.values(), key=lambda b: b.index):
+            P_calc, Q_calc = s.compute_power_injection(bus, c.ybus, V)
+            print(f"{bus.name}: {P_calc * 100:.2f} MW, {Q_calc * 100:.2f} Mvar")
+
+        # -----------------
+        # Mismatch
+        # -----------------
+        mismatch, labels = s.compute_power_mismatch(c.buses, c.ybus, V, c)
+
+        print("\nMismatch Vector:")
+        for label, value in zip(labels, mismatch):
+            if label.startswith("dP"):
+                print(f"{label} = {value * 100:.2f} MW")
+            else:
+                print(f"{label} = {value * 100:.2f} Mvar")
+
+        # -----------------
+        # Jacobian
+        # -----------------
+        jac = Jacobian()
+        J = jac.calc_jacobian(c.buses, c.ybus, V, s)
+
+        print("\nJacobian Matrix:")
+        print(J)
+
+        # -----------------
+        # Dimension Check
+        # -----------------
+        print("\nChecks:")
+        print("Jacobian shape:", J.shape)
+        print("Mismatch length:", len(mismatch))
+
+        # -----------------
+        # Newton Step
+        # -----------------
+        dx = np.linalg.solve(J, mismatch)
+
+        print("\nNewton Step (dx):")
+        print(dx)
