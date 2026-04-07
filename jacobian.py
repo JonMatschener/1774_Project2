@@ -136,6 +136,73 @@ class Jacobian:
 
         return J
 
+    def pretty_print(self, J, buses):
+        """
+        Prints Jacobian in labeled 4-quadrant format
+        """
+
+        ordered = sorted(buses.values(), key=lambda b: b.index)
+
+        # Build variable lists again (same logic as calc)
+        angle_buses = []
+        voltage_buses = []
+
+        for bus in ordered:
+            if bus.bus_type != "Slack":
+                angle_buses.append(bus)
+            if bus.bus_type == "PQ":
+                voltage_buses.append(bus)
+
+        # Labels
+        angle_labels = [f"δ_{b.name}" for b in angle_buses]
+        voltage_labels = [f"V_{b.name}" for b in voltage_buses]
+
+        col_labels = angle_labels + voltage_labels
+
+        row_labels = []
+        for b in angle_buses:
+            row_labels.append(f"dP_{b.name}")
+        for b in voltage_buses:
+            row_labels.append(f"dQ_{b.name}")
+
+        n_angle = len(angle_buses)
+
+        print("\n=========== JACOBIAN MATRIX ===========\n")
+
+        # Header
+        header = " " * 12 + "| "
+        for label in angle_labels:
+            header += f"{label:>10} "
+        header += "| "
+        for label in voltage_labels:
+            header += f"{label:>10} "
+        print(header)
+
+        print("-" * len(header))
+
+        # Rows
+        for i, row_label in enumerate(row_labels):
+
+            row_str = f"{row_label:<12}| "
+
+            # Left block (J1 or J3)
+            for j in range(n_angle):
+                row_str += f"{J[i, j]:10.4f} "
+
+            row_str += "| "
+
+            # Right block (J2 or J4)
+            for j in range(n_angle, J.shape[1]):
+                row_str += f"{J[i, j]:10.4f} "
+
+            print(row_str)
+
+            # Divider between P and Q blocks
+            if i == n_angle - 1:
+                print("-" * len(header))
+
+        print("\n(J1 = dP/dδ, J2 = dP/dV, J3 = dQ/dδ, J4 = dQ/dV)\n")
+
 # Test Case
 
     if __name__ == "__main__":
@@ -255,7 +322,7 @@ class Jacobian:
         J = jac.calc_jacobian(c.buses, c.ybus, V, s)
 
         print("\nJacobian Matrix:")
-        print(J)
+        jac.pretty_print(J, c.buses)
 
         # -----------------
         # Dimension Check
