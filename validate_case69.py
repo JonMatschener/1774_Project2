@@ -1,32 +1,38 @@
 from circuit import Circuit
+from powerflow import PowerFlow
 
 c = Circuit("Case 6.9")
 
-# -----------------
-# Add 5 Buses
-# -----------------
-c.addbus("One", 15.0)
-c.addbus("Two", 345.0)
-c.addbus("Three", 15.0)
-c.addbus("Four", 345.0)
-c.addbus("Five", 345.0)
+c.addbus("One", 15.0, "Slack", 1.0, 0.0)
+c.addbus("Two", 345.0, "PQ", 1.0, 0.0)
+c.addbus("Three", 15.0, "PV", 1.05, 0.0)
+c.addbus("Four", 345.0, "PQ", 1.0, 0.0)
+c.addbus("Five", 345.0, "PQ", 1.0, 0.0)
 
-# -----------------
-# Add 2 Transformers
-# -----------------
 c.addtransformer("T1", "One", "Five", 0.0015, 0.02)
 c.addtransformer("T2", "Four", "Three", 0.00075, 0.01)
 
-# -----------------
-# Add 3 Transmission Lines
-# -----------------
-c.addtransmissionline("L1", "Five", "Four", 0.00225, 0.025, 0.00, 0.44)
-c.addtransmissionline("L2", "Five", "Two", 0.0045, 0.05, 0.00, 0.88)
-c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.00, 1.72)
+c.addtransmissionline("L1", "Five", "Four", 0.00225, 0.025, 0.0, 0.44)
+c.addtransmissionline("L2", "Five", "Two", 0.0045, 0.05, 0.0, 0.88)
+c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.0, 1.72)
 
-# -----------------
-# Compute Ybus
-# -----------------
+c.addgenerator("G1", "One", 1.0, 0.0)
+c.addgenerator("G2", "Three", 1.05, 520.0)
+
+c.addload("Load2", "Two", 800.0, 280.0)
+c.addload("Load3", "Three", 80.0, 40.0)
+
 c.calc_ybus()
-print(c.ybus.to_string())
-print(c.transmissionlines["L2"].r)
+
+pf = PowerFlow(sbase=100.0)
+results = pf.solve(c, tol=0.001, max_iter=50)
+
+print("Converged:", results["converged"])
+print("Iterations:", results["iterations"])
+print()
+
+for i, name in enumerate(results["bus_names"]):
+    print(
+        f"{name}: V = {results['V'][i]:.6f} pu, "
+        f"delta = {results['delta_deg'][i]:.6f} deg"
+    )
