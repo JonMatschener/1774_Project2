@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd79156-3de6-496b-a94b-db2428520f9d" name="Changes" comment="circuit change (ybus)">
-      <change afterPath="$PROJECT_DIR$/test_fault.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/circuit.py" beforeDir="false" afterPath="$PROJECT_DIR$/circuit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/powerflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/powerflow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_fault.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_fault.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,29 +51,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.circuit.executor": "Run",
-    "Python.circuitimplementation.executor": "Run",
-    "Python.generator.executor": "Run",
-    "Python.jacobian.executor": "Run",
-    "Python.powerflow.executor": "Run",
-    "Python.settings.executor": "Run",
-    "Python.test_fault.executor": "Run",
-    "Python.validate_case69.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.circuit.executor&quot;: &quot;Run&quot;,
+    &quot;Python.circuitimplementation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.generator.executor&quot;: &quot;Run&quot;,
+    &quot;Python.jacobian.executor&quot;: &quot;Run&quot;,
+    &quot;Python.powerflow.executor&quot;: &quot;Run&quot;,
+    &quot;Python.settings.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_fault.executor&quot;: &quot;Run&quot;,
+    &quot;Python.validate_case69.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="circuit" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ECE1774_Project2" />
@@ -174,7 +171,8 @@
       <option name="presentableId" value="Default" />
       <updated>1771336171720</updated>
       <workItem from="1775563581507" duration="2940000" />
-      <workItem from="1776168547905" duration="3588000" />
+      <workItem from="1776168547905" duration="3632000" />
+      <workItem from="1776172291723" duration="348000" />
     </task>
     <task id="LOCAL-00001" summary="circuit implementation">
       <option name="closed" value="true" />
@@ -232,7 +230,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774527748249</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="circuit change (ybus)">
+      <option name="closed" value="true" />
+      <created>1776172157610</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1776172157610</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,16 +264,16 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="circuit implementation" />
     <MESSAGE value="circuit change" />
-    <MESSAGE value="circuit change (ybus)" />
     <MESSAGE value="milestone6" />
-    <option name="LAST_COMMIT_MESSAGE" value="milestone6" />
+    <MESSAGE value="circuit change (ybus)" />
+    <option name="LAST_COMMIT_MESSAGE" value="circuit change (ybus)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ECE1774_Project2$jacobian.coverage" NAME="jacobian Coverage Results" MODIFIED="1775565629033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ECE1774_Project2$circuit.coverage" NAME="circuit Coverage Results" MODIFIED="1776170329675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ECE1774_Project2$circuit.coverage" NAME="circuit Coverage Results" MODIFIED="1776172295459" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ECE1774_Project2$powerflow.coverage" NAME="powerflow Coverage Results" MODIFIED="1776171116264" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ECE1774_Project2$settings.coverage" NAME="settings Coverage Results" MODIFIED="1774962727667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ECE1774_Project2$generator.coverage" NAME="generator Coverage Results" MODIFIED="1776170338592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ECE1774_Project2$test_fault.coverage" NAME="test_fault Coverage Results" MODIFIED="1776171119825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ECE1774_Project2$test_fault.coverage" NAME="test_fault Coverage Results" MODIFIED="1776172605788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
