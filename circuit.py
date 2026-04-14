@@ -35,10 +35,10 @@ class Circuit:
             raise ValueError(f"TransmissionLine with name '{name}' already exists.")
         self.transmissionlines[name] = TransmissionLine(name, bus1_name, bus2_name, r, x, g, b)
 
-    def addgenerator(self, name: str, bus1_name: str, voltage_setpoint: float, mw_setpoint: float):
+    def addgenerator(self, name: str, bus1_name: str, voltage_setpoint: float, mw_setpoint: float, xdp=None):
         if name in self.generators:
             raise ValueError(f"Generator with name '{name}' already exists.")
-        self.generators[name] = Generator(name, bus1_name, voltage_setpoint, mw_setpoint)
+        self.generators[name] = Generator(name, bus1_name, voltage_setpoint, mw_setpoint, xdp)
 
     def addload(self, name: str, bus1_name: str, mw: float, mvar: float):
         if name in self.loads:

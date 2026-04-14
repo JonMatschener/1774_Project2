@@ -6,7 +6,18 @@ class PowerFlow:
     def __init__(self, sbase=100.0):
         self.sbase = float(sbase)
 
-    def solve(self, circuit, tol=0.001, max_iter=50):
+    def solve(self, circuit, mode="powerflow", fault_bus=None):
+
+        if mode == "powerflow":
+            return self._solve_powerflow(circuit)
+
+        elif mode == "fault":
+            return self._solve_fault(circuit, fault_bus)
+
+        else:
+            raise ValueError("Invalid mode")
+
+    def _solve_powerflow(self, circuit, tol=0.001, max_iter=50):
         if circuit.ybus is None:
             circuit.calc_ybus()
 
@@ -112,6 +123,57 @@ class PowerFlow:
             "V": V,
             "delta_deg": np.degrees(delta),
             "bus_names": ordered_bus_names
+        }
+
+    def _solve_fault(self, circuit, fault_bus):
+
+        if circuit.ybus is None:
+            circuit.calc_ybus()
+
+        Ybus = circuit.ybus.to_numpy(dtype=complex)
+
+        # -------------------------
+        # STEP 1: Add generator subtransient admittance
+        # -------------------------
+        name_to_idx = {name: i for i, name in enumerate(circuit.ybus.index)}
+
+        for gen in circuit.generators.values():
+            idx = name_to_idx[gen.bus1_name]
+            Ybus[idx, idx] += gen.get_admittance()
+
+        # -------------------------
+        # STEP 2: Build Zbus
+        # -------------------------
+        Zbus = np.linalg.inv(Ybus)
+
+        # -------------------------
+        # STEP 3: Fault location
+        # -------------------------
+        fault_idx = name_to_idx[fault_bus]
+
+        # Assume prefault voltage = 1∠0
+        V_prefault = np.ones(len(Ybus), dtype=complex)
+
+        # -------------------------
+        # STEP 4: Fault current
+        # -------------------------
+        Znn = Zbus[fault_idx, fault_idx]
+
+        Ifault = V_prefault[fault_idx] / Znn
+
+        # -------------------------
+        # STEP 5: Post-fault voltages
+        # -------------------------
+        V_post = np.zeros_like(V_prefault, dtype=complex)
+
+        for i in range(len(V_post)):
+            V_post[i] = V_prefault[i] - Zbus[i, fault_idx] * Ifault
+
+        return {
+            "Ifault": Ifault,
+            "V_post": V_post,
+            "Zbus": Zbus,
+            "bus_names": list(circuit.ybus.index)
         }
 
     def _calc_power(self, Y, V, delta):

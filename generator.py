@@ -5,18 +5,27 @@ class Generator:
         name: str,
         bus1_name: str,
         voltage_setpoint: float,
-        mw_setpoint: float
+        mw_setpoint: float,
+        xdp: float = None
     ):
         self.name = name
         self.bus1_name = bus1_name
         self.voltage_setpoint = float(voltage_setpoint)
         self.mw_setpoint = float(mw_setpoint)
 
+        # NEW (Milestone 9)
+        self.xdp = xdp  # subtransient reactance (pu)
+
     def calc_p(self, sbase):
         """
         Return per-unit real power injection.
         """
         return self.mw_setpoint / sbase
+
+        # NEW (Milestone 9)
+    def get_admittance(self):
+        # 1 / jX''
+        return 1 / (1j * self.xdp)
 
     def __repr__(self):
         return (
