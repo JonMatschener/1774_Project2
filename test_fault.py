@@ -1,41 +1,58 @@
 from circuit import Circuit
 from powerflow import PowerFlow
 
-c = Circuit("Fault Test")
+c = Circuit("2-Bus Fault Case (Diagram Match)")
 
-# Buses
-c.addbus("One", 15.0, "Slack", 1.0, 0.0)
-c.addbus("Two", 345.0, "PQ", 1.0, 0.0)
-c.addbus("Three", 15.0, "PV", 1.05, 0.0)
-c.addbus("Four", 345.0, "PQ", 1.0, 0.0)
-c.addbus("Five", 345.0, "PQ", 1.0, 0.0)
+# -----------------
+# BUSSING (2-bus equivalent system)
+# -----------------
+c.addbus("Bus 1", 13.8, "Slack", 1.0, 0.0)   # Generator side
+c.addbus("Bus 2", 13.8, "PQ", 1.0, 0.0)      # Fault + load side
 
-# Network
-c.addtransformer("T1", "One", "Five", 0.0015, 0.02)
-c.addtransformer("T2", "Four", "Three", 0.00075, 0.01)
+# -----------------
+# GENERATORS (subtransient reactance included in fault model)
+# -----------------
+c.addgenerator("G1", "Bus 1", 1.0, 0.0, xdp=0.15)
+c.addgenerator("G2", "Bus 2", 1.0, 0.0, xdp=0.20)
 
-c.addtransmissionline("L1", "Five", "Four", 0.00225, 0.025, 0.0, 0.44)
-c.addtransmissionline("L2", "Five", "Two", 0.0045, 0.05, 0.0, 0.88)
-c.addtransmissionline("L3", "Four", "Two", 0.009, 0.1, 0.0, 1.72)
+# -----------------
+# TRANSFORMERS (T1 + T2 lumped into equivalent)
+# -----------------
+c.addtransformer("T1", "Bus 1", "Bus 2", 0.0, 0.10)
+c.addtransformer("T2", "Bus 1", "Bus 2", 0.0, 0.10)
 
-# Generators
-c.addgenerator("G1", "One", 1.0, 0.0, xdp=0.2)
-c.addgenerator("G2", "Three", 1.05, 520.0, xdp=0.25)
+# -----------------
+# TRANSMISSION LINE (20 ohm → pu)
+# -----------------
+c.addtransmissionline("Line", "Bus 1", "Bus 2", 0.0, 0.105, 0.0, 0.0)
 
-# Loads
-c.addload("Load2", "Two", 800.0, 280.0)
-c.addload("Load3", "Three", 80.0, 40.0)
+# -----------------
+# LOAD (motor equivalent at Bus 2)
+# -----------------
+c.addload("Load", "Bus 2", 0.8, 0.28)
 
-# Build Ybus
+# -----------------
+# BUILD NETWORK
+# -----------------
 c.calc_ybus()
 
-# Solve fault
+# -----------------
+# FAULT SOLVER
+# -----------------
 pf = PowerFlow()
 
-result = pf.solve(c, mode="fault", fault_bus="Two")
+result = pf.solve(
+    c,
+    mode="fault",
+    fault_bus="Bus 2"
+)
 
+# -----------------
+# OUTPUT
+# -----------------
 print("\nFault Current:")
 print(result["Ifault"])
 
 print("\nPost-Fault Voltages:")
-print(result["V_post"])
+for name, v in zip(result["bus_names"], result["V_post"]):
+    print(f"{name}: {v}")
