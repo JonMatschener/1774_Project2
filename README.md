@@ -1,1 +1,4 @@
 # 1774_Project2
+
+The Power System Simulator is a Python-based tool developed to analyze electrical power networks using industry-standard methods. Unlike the simple DC circuit from Project 1, this simulator models a full AC power system including buses, transmission lines, transformers, generators, and loads. The program computes system behavior using per-unit analysis, nodal admittance matrices, and iterative numerical methods.
+The primary goal of this project is to automate power flow and fault calculations for multi-bus systems. The simulator calculates bus voltages, power injections, and system responses under both normal operating conditions and fault scenarios. These types of analyses are essential in real-world power engineering applications such as grid planning, stability studies, and contingency analysis.
