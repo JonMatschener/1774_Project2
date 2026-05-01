@@ -6,10 +6,10 @@ class PowerFlow:
     def __init__(self, sbase=100.0):
         self.sbase = float(sbase)
 
-    def solve(self, circuit, mode="powerflow", fault_bus=None):
+    def solve(self, circuit, mode="powerflow", fault_bus=None, tol=0.001, max_iter=50):
 
         if mode == "powerflow":
-            return self._solve_powerflow(circuit)
+            return self._solve_powerflow(circuit, tol=tol, max_iter=max_iter)
 
         elif mode == "fault":
             return self._solve_fault(circuit, fault_bus)

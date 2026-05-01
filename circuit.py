@@ -3,6 +3,7 @@ from transformer import Transformer
 from transmissionLine import TransmissionLine
 from load import Load
 from generator import Generator
+from shunt import Shunt
 import numpy as np
 import pandas as pd
 
@@ -19,6 +20,7 @@ class Circuit:
         self.generators = {}
         self.loads = {}
         self.ybus = None
+        self.shunts = {}
 
     def addbus(self, name: str, nominal_kv: float, bus_type="PQ", vpu=1.0, delta=0.0):
         if name in self.buses:
@@ -103,5 +105,17 @@ class Circuit:
             yprim = line.calc_yprim()
             stamp_two_terminal(yprim, line.bus1_name, line.bus2_name)
 
+        for shunt in self.shunts.values():
+            if shunt.bus1_name not in name_to_idx:
+                raise ValueError(f"Shunt bus '{shunt.bus1_name}' not found in circuit buses.")
+
+            i = name_to_idx[shunt.bus1_name]
+            Y[i, i] += shunt.calc_y()
+
         self.ybus = pd.DataFrame(Y, index=bus_names, columns=bus_names)
         return self.ybus
+
+    def addshunt(self, name: str, bus1_name: str, q_mvar: float, sbase=100.0):
+        if name in self.shunts:
+            raise ValueError(f"Shunt with name '{name}' already exists.")
+        self.shunts[name] = Shunt(name, bus1_name, q_mvar, sbase)
