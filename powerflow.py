@@ -6,7 +6,60 @@ class PowerFlow:
     def __init__(self, sbase=100.0):
         self.sbase = float(sbase)
 
+#Project 3 Addition:
+    def _is_connected_to_slack(self, circuit):
+        """
+        Returns True if all buses are connected to the slack bus.
+        Uses BFS to check connectivity.
+        """
+
+        # Build adjacency list from in-service elements
+        graph = {bus: set() for bus in circuit.buses.keys()}
+
+        # Add transformer connections
+        for t in circuit.transformers.values():
+            if t.in_service:
+                graph[t.bus1_name].add(t.bus2_name)
+                graph[t.bus2_name].add(t.bus1_name)
+
+        # Add transmission line connections
+        for line in circuit.transmissionlines.values():
+            if line.in_service:
+                graph[line.bus1_name].add(line.bus2_name)
+                graph[line.bus2_name].add(line.bus1_name)
+
+        # Find slack bus
+        slack_bus = None
+        for bus in circuit.buses.values():
+            if bus.bus_type == "Slack":
+                slack_bus = bus.name
+                break
+
+        if slack_bus is None:
+            raise ValueError("No slack bus defined.")
+
+        # BFS from slack
+        visited = set()
+        queue = [slack_bus]
+
+        while queue:
+            current = queue.pop(0)
+            if current not in visited:
+                visited.add(current)
+                queue.extend(graph[current] - visited)
+
+        # If all buses visited → connected
+        return len(visited) == len(circuit.buses)
+
     def solve(self, circuit, mode="powerflow", fault_bus=None):
+
+        #Project 3 Addition:
+        # --- Island detection ---
+        if not self._is_connected_to_slack(circuit):
+            raise ValueError(
+                "System is islanded (not all buses connected to slack). "
+                "Power flow cannot be solved."
+            )
 
         if mode == "powerflow":
             return self._solve_powerflow(circuit)
