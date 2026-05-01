@@ -26,6 +26,9 @@ class TransmissionLine:
         # Shunt admittance
         self.Yshunt = complex(self.g, self.b)
 
+        #Project 3 Addition:
+        self.in_service = True  # Breaker status
+
     def calc_yprim(self):
         """
         Returns the 2x2 primitive admittance matrix

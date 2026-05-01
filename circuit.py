@@ -45,6 +45,21 @@ class Circuit:
             raise ValueError(f"Load with name '{name}' already exists.")
         self.loads[name] = Load(name, bus1_name, mw, mvar)
 
+    # Project 3 Addition:
+    # BREAKER CONTROL
+
+    def open_line(self, name):
+        self.transmissionlines[name].in_service = False
+
+    def close_line(self, name):
+        self.transmissionlines[name].in_service = True
+
+    def open_transformer(self, name):
+        self.transformers[name].in_service = False
+
+    def close_transformer(self, name):
+        self.transformers[name].in_service = True
+
     def calc_ybus(self):
         bus_names = list(self.buses.keys())
         N = len(bus_names)
@@ -95,13 +110,19 @@ class Circuit:
             Y[j, i] += y21
             Y[j, j] += y22
 
+        #Project 3 Addition:
         for t in self.transformers.values():
+            if not t.in_service:
+                continue   # 🔥 BREAKER LOGIC
             yprim = t.calc_yprim()
             stamp_two_terminal(yprim, t.bus1_name, t.bus2_name)
 
         for line in self.transmissionlines.values():
+            if not line.in_service:
+                continue   # 🔥 BREAKER LOGIC
             yprim = line.calc_yprim()
             stamp_two_terminal(yprim, line.bus1_name, line.bus2_name)
 
         self.ybus = pd.DataFrame(Y, index=bus_names, columns=bus_names)
         return self.ybus
+

@@ -20,6 +20,9 @@ class Transformer:
         # Compute series admittance
         self.Yseries = 1 / complex(self.r, self.x)
 
+        #Project 3 Addition
+        self.in_service = True  # Breaker status
+
     def calc_yprim(self):
         """
         Returns the 2x2 primitive admittance matrix
