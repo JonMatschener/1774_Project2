@@ -113,13 +113,13 @@ class Circuit:
         #Project 3 Addition:
         for t in self.transformers.values():
             if not t.in_service:
-                continue   # 🔥 BREAKER LOGIC
+                continue   # BREAKER LOGIC
             yprim = t.calc_yprim()
             stamp_two_terminal(yprim, t.bus1_name, t.bus2_name)
 
         for line in self.transmissionlines.values():
             if not line.in_service:
-                continue   # 🔥 BREAKER LOGIC
+                continue   # BREAKER LOGIC
             yprim = line.calc_yprim()
             stamp_two_terminal(yprim, line.bus1_name, line.bus2_name)
 
